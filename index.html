@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>謝文捷的網站</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main>
+    <section id="header">
+        <h3><a style="color: rgb(0, 69, 134);" target="_blank">謝文捷 | Hsieh Wen Chieh</a></h3>
+      </section>
+
+    <div class="flex-section">
+
+      <section id="about">
+        <h2>關於我</h2>
+        <h8> ⇩ &Tab;學歷、興趣....</h8>
+        <div class="project-buttons">
+          <a href="Meeee.html" class="project-me">關於我的更多</a>
+        </div>
+      </section>
+
+      <section id="home">
+        <h2>友站</h2>
+        <div class="project-buttons">
+          <a href="friend.html" class="project-btn">我的朋友們...</a>
+        </div>
+      </section>
+
+      <section id="projects">
+        <h2>作品</h2>
+        <p> ⇩ &Tab;Side Projects</p>
+        <div class="project-buttons">
+          <a href="dc ptt.html" class="project-but">DC PTT電蝦版爬文 bot</a>
+          <a href="mc bot.html" class="project-but">DC 監控 bot</a>            
+          <a href="ugi-minecraft.html" class="project-but">Minecraft私服</a>
+          <a href="https://github.com/Xie-qwp1234/deploy-local-AI-teaching" class="project-but">AI服務教學</a>
+        </div>
+      </section>
+
+      <section id="projects">
+        <h2>相關連結</h2>
+        <p> ⇩ &Tab;github、ins...</p>
+        <div class="project-buttons">
+          <a href="http://xieserver.com/" class="project-my-web">My web</a>
+          <a href="https://github.com/Xie-qwp1234" class="project-github">Github</a>
+          <a href="https://discordapp.com/users/866580360304001035" class="project-DC">Discord</a>
+          <a href="https://www.instagram.com/xie.w.1214?igsh=MTcxcXByOXZnOW0xeQ==" class="project-ins">instagram</a>
+        </div>
+      </section>
+    </div>
+
+    
+
+
+  </main>
+
+  <footer>
+    <p>𖠿不公開 &emsp; ☏(+886)不公開 &emsp; <a href="#" style="color: rgb(255, 255, 255);" target="_blank">🖂109st955160@gmail.com</a></p>
+    <p>&copy; 2025-謝文捷</p>
+  </footer>
+
+  <script>
+    // 平滑滾動
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        document.querySelector(link.getAttribute("href")).scrollIntoView({
+          behavior: "smooth"
+        });
+      });
+    });
+
+    // 導覽列高亮
+    const sections = document.querySelectorAll("section");
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    window.addEventListener("scroll", () => {
+      let current = "";
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 60) {
+          current = section.getAttribute("id");
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === "#" + current) {
+          link.classList.add("active");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

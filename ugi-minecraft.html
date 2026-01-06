@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>專案:製作DISCORD的PTT爬文機器人</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="blog-post">
+    <section id="header">
+        <h3><a style="color: rgb(0, 69, 134);" target="_blank">謝文捷 | Hsieh Wen Chieh</a></h3>
+    </section>
+    <div class="flex-section">
+      <section id="about">
+        <h1>專案:架設twitch實況主Minecraft私服</h1>
+        <h3>專案簡介</h3>
+        <p>這是一個我自行架設的 Minecraft 伺服器，提供穩定的遊玩體驗(ping約3~4毫秒)，最多支援 40-50 位玩家同時連線。伺服器架設於自家 Ubuntu Server 上，並結合網域名稱（mc.xieserver.com）提供方便的連線方式。</p>
+        
+        <h3>功能說明</h3>
+        <p>• 支援 Java 版 Minecraft 1.20.6</p>
+        <p>• 白名單制度：有效防止不明玩家進入伺服器破壞環境。</p>
+        <p>• 自動清除掉落物：每 10 分鐘清除一次無主掉落物，減少伺服器 lag。</p>
+        <p>• <a href="mc bot.html"><span style="color: rgb(68, 68, 207);">DC 監控 bot</span></a>自動監控伺服器狀態</p>
+
+        <h3>技術細節</h3>
+        <p>• 作業系統：Ubuntu Server（安裝於 Proxmox VM 上）</p>
+        <p>• 伺服器核心：PaperMC 1.20.6</p>
+        <p>• 網路：使用固定 IP 並透過動態 DNS 服務綁定網域名稱</p>
+        <p>• Bot 整合：以 Python 撰寫 Discord Bot，自動每 5 分鐘推送伺服器狀態</p>
+
+        <h3>加入方式</h3>
+        <p>1. <a href="https://www.twitch.tv/ugi_uwu_" style="color: rgb(153, 45, 255);" target="_blank">訂閱ugi</a></p>
+        <p>2. 加入ugi官方<a href="https://discord.com/invite/Xqrt3jDyMs" style="color: rgb(153, 45, 255);" target="_blank">Discord群組</a></p>
+        <p>3. 收到Discord訂閱者身分組後填<a href="https://forms.gle/AfpoCfoRFCszprCG6" style="color: rgb(153, 45, 255);" target="_blank">表單</a>申請加入</p>
+        <P>4. 審核通過後開啟Minecraft並於加入連結打上mc.xieserver.com</P>
+        
+        <h3>心得</h3>
+        <p>這次從零開始架設 Minecraft 伺服器是一段很扎實的實作經驗，不僅學會了伺服器虛擬化與網路設定，也進一步理解如何部署穩定的長期遊玩環境。
+        途中遇到DNS 設定錯誤、插件版本不相容等問題，都是讓我實際練習問題排查與解決的好機會。透過持續修正與測試，最終打造出穩定的伺服器環境，也讓我更了解系統維運的概念。</p>
+      </div>
+    </section>
+
+
+    <p><a href="index.html">← 返回首頁</a></p>
+  </main>
+
+  <footer>
+    <p>𖠿不公開 &emsp; ☏(+886)不公開 &emsp; 🖂109st955160@gmail.com</p>
+    <p>&copy; 2025 文捷</p>
+  </footer>
+</body>
+</html>

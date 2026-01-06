@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>專案:利用 Discord Bot 監控 Minecraft 伺服器狀態</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <main class="blog-post">
+        <section id="header">
+            <h3><a style="color: rgb(0, 69, 134);" target="_blank">謝文捷 | Hsieh Wen Chieh</a></h3>
+        </section>
+        <div class="flex-section">
+            <section id="about">
+                <h1>專案:利用 Discord Bot 監控 Minecraft 伺服器狀態</h1>
+                <h3>專案簡介</h3>
+                <p>為了更方便監控自架的 Minecraft 伺服器狀態，我設計了一個 Discord Bot，能夠定時自動回報伺服器的延遲與在線人數。這個機器人部署於 Ubuntu Server 虛擬機器中，與 Discord 頻道串接，實現伺服器即時狀態通知，並支援指令查詢，提升了管理效率與資訊透明度。</p>
+                <h3>功能說明</h3>
+                <p>• !status 指令：手動查詢伺服器狀態</p>
+                <p>• 自動通知：每 5 分鐘推播伺服器在線人數與延遲至指定頻道</p>
+                <p>• 錯誤處理：若伺服器關閉或無法查詢，會回傳錯誤通知</p>
+                <h3>技術細節</h3>
+                <p>• 主要套件：</p>
+                    <p>• discord.py：與 Discord API 溝通</p>
+                    <p>• mcstatus：查詢 Minecraft Java 伺服器狀態</p>
+                    <p>• apscheduler：定時任務排程</p>
+                <p>• 執行架構：</p>
+                    <p>• 透過 systemd 服務常駐啟動</p>
+                    <p>• Discord bot 實例與事件循環由 asyncio 管理</p>
+                    <p>• 定時任務自動查詢伺服器並回報訊息至 Discord 頻道</p>
+                <h3>實際運作畫面</h3>
+                <img src="images/dc-mc-run.jpg" alt="我的照片" width="600" />
+                <p>"在伺服器無作動時顯示紅色，反之則為綠色，可使用!status呼叫機器人"</p>
+                <h3>原始碼與部署教學</h3>
+                <a href="https://github.com/Xie-qwp1234/Discord-Port-Monitor-Bot">Github</a>
+                <h5>bot.py</h5>
+                <pre><code class="language-python">
+                import os
+                import asyncio
+                import discord
+                from discord.ext import commands
+                from dotenv import load_dotenv
+                from mcstatus import JavaServer
+                from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+                load_dotenv()
+
+                DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+                CHANNEL_ID = os.getenv("CHANNEL_ID")
+                MC_ADDRESS = os.getenv("MC_ADDRESS")
+
+                if not all([DISCORD_TOKEN, CHANNEL_ID, MC_ADDRESS]):
+                    print("⚠️ 請確認 .env 檔案的 DISCORD_TOKEN、CHANNEL_ID、MC_ADDRESS 都有正確設定！")
+                    exit(1)
+
+                intents = discord.Intents.default()
+                intents.message_content = True
+
+                bot = commands.Bot(command_prefix="!", intents=intents)
+
+                async def send_status():
+                    channel = bot.get_channel(int(CHANNEL_ID))
+                    if not channel:
+                        print(f"⚠️ 找不到頻道 ID {CHANNEL_ID}")
+                        return
+
+                    try:
+                        server = JavaServer.lookup(MC_ADDRESS)
+                        status = await asyncio.get_event_loop().run_in_executor(None, server.status)
+
+                        embed = discord.Embed(title="🟢 Minecraft Server Status", color=0x00ff00)
+                        embed.add_field(name="延遲", value=f"{status.latency:.1f} ms", inline=True)
+                        embed.add_field(name="人數", value=f"{status.players.online}/{status.players.max}", inline=True)
+                    except Exception as e:
+                        embed = discord.Embed(title="🔴 Minecraft Server Status", description=str(e), color=0xff0000)
+
+                    await channel.send(embed=embed)
+
+                @bot.event
+                async def on_ready():
+                    print(f"✅ Discord Bot 啟動成功！登入帳號：{bot.user}")
+                    scheduler = AsyncIOScheduler()
+                    scheduler.add_job(send_status, "interval", minutes=5)
+                    scheduler.start()
+
+                @bot.command(name="status")
+                async def manual_status(ctx):
+                    try:
+                        server = JavaServer.lookup(MC_ADDRESS)
+                        status = server.status()
+
+                        embed = discord.Embed(title="🟢 Minecraft Server Status", color=0x00ff00)
+                        embed.add_field(name="延遲", value=f"{status.latency:.1f} ms", inline=True)
+                        embed.add_field(name="人數", value=f"{status.players.online}/{status.players.max}", inline=True)
+                    except Exception as e:
+                        embed = discord.Embed(title="🔴 Minecraft Server Status", description=str(e), color=0xff0000)
+
+                    await ctx.send(embed=embed)
+
+                if __name__ == "__main__":
+                    bot.run(DISCORD_TOKEN)
+
+                </code></pre>
+
+                <h5>mcstatusbot.service</h5>
+                <pre><code class="language-python">
+                [Unit]
+                Description=Minecraft Server Status Discord Bot
+                After=network.target
+
+                [Service]
+                Type=simple
+                User=root
+                WorkingDirectory=/root/mc-status-bot
+                ExecStart=/root/mc-status-bot/venv/bin/python /root/mc-status-bot/bot.py
+                Restart=always
+                RestartSec=10
+
+                [Install]
+                WantedBy=multi-user.target
+
+
+                </code></pre>
+
+                <h5>env.env</h5>
+                <pre><code class="language-python">
+                DISCORD_TOKEN=(你的機器人TOKEN)
+                CHANNEL_ID=(想發文的頻道ID)
+                MC_ADDRESS=(你想監控的IP)
+
+                </code></pre>
+                <h3>心得</h3>
+                <p>這個專案讓我更深入掌握了 Python 與 Discord Bot 的實作流程，並學習如何在 Linux 環境中部署常駐服務。也實際運用 mcstatus 與 apscheduler 實現 Minecraft 狀態查詢與自動推播。
+                在過程中我也遇到了一些挑戰，例如 .env 的讀取問題、systemd 服務未自動啟動、Bot 無法連線的排查等，但也因此學會了更多關於 Linux 管理與 Debug 的技巧。</p>
+                </div>
+            </section>
+
+
+    <p><a href="index.html">← 返回首頁</a></p>
+</main>
+
+  <footer>
+    <p>𖠿不公開 &emsp; ☏(+886)不公開 &emsp; 🖂109st955160@gmail.com</p>
+    <p>&copy; 2025 文捷</p>
+  </footer>
+</body>
+</html>
